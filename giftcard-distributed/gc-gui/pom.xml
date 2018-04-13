@@ -21,7 +21,12 @@
 		<!-- Our api classes -->
 		<dependency>
 			<groupId>com.example</groupId>
-			<artifactId>gc-common</artifactId>
+			<artifactId>gc-command-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.example</groupId>
+			<artifactId>gc-query-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

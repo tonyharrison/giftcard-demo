@@ -29,7 +29,8 @@
 	</properties>
 
 	<modules>
-		<module>gc-common</module>
+		<module>gc-command-api</module>
+		<module>gc-query-api</module>
 		<module>gc-command</module>
 		<module>gc-query</module>
 		<module>gc-gui</module>

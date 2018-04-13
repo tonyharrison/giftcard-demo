@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>gc-common</artifactId>
+	<artifactId>gc-command-api</artifactId>
 	<version>2.0</version>
 	<packaging>jar</packaging>
 
-	<name>gc-common</name>
-	<description>Giftcard-distributed common classes</description>
+	<name>gc-command-api</name>
+	<description>API of gc-command</description>
 
     <parent>
         <groupId>com.example</groupId>
