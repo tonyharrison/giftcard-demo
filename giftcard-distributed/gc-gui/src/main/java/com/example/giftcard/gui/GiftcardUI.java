@@ -34,15 +34,12 @@ public class GiftcardUI extends UI {
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        HorizontalLayout commandBar = new HorizontalLayout();
-        commandBar.setSizeFull();
-        commandBar.addComponents(issuePanel(), redeemPanel());
 
-        VerticalLayout layout = new VerticalLayout();
-        layout.addComponents(commandBar, summaryGrid());
-        layout.setHeight(95, Unit.PERCENTAGE);
+        TabSheet tabsheet = new TabSheet();
+        tabsheet.addTab(cardsTab());
+        tabsheet.addTab(batchTab());
 
-        setContent(layout);
+        setContent(tabsheet);
 
         UI.getCurrent().setErrorHandler(new DefaultErrorHandler() {
             @Override
@@ -53,6 +50,32 @@ public class GiftcardUI extends UI {
                 Notification.show("Error", cause.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
         });
+    }
+
+    private VerticalLayout cardsTab() {
+        HorizontalLayout commandBar = new HorizontalLayout();
+        commandBar.setSizeFull();
+        commandBar.addComponents(issuePanel(), redeemPanel());
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponents(commandBar, summaryGrid());
+        layout.setHeight(95, Unit.PERCENTAGE);
+        layout.setCaption("Cards");
+
+        return layout;
+    }
+
+    private VerticalLayout batchTab() {
+        HorizontalLayout commandBar = new HorizontalLayout();
+        commandBar.setSizeFull();
+        commandBar.addComponents(issuePanel());
+
+        VerticalLayout layout = new VerticalLayout();
+        layout.addComponents(commandBar);
+        layout.setHeight(95, Unit.PERCENTAGE);
+        layout.setCaption("Batch");
+
+        return layout;
     }
 
     @Override
