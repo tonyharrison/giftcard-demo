@@ -3,6 +3,7 @@ package com.example.giftcard.query;
 import com.example.giftcard.command.api.IssuedEvt;
 import com.example.giftcard.command.api.RedeemedEvt;
 import com.example.giftcard.query.api.*;
+import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.Timestamp;
 import org.axonframework.queryhandling.QueryHandler;
@@ -16,15 +17,19 @@ import java.lang.invoke.MethodHandles;
 import java.time.Instant;
 import java.util.Collection;
 
+import static org.axonframework.eventhandling.GenericEventMessage.asEventMessage;
+
 @Component
 public class CardSummaryProjection {
 
     private final static Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final EntityManager entityManager;
+    private final EventBus eventBus;
 
-    public CardSummaryProjection(EntityManager entityManager) {
+    public CardSummaryProjection(EntityManager entityManager, EventBus eventBus) {
         this.entityManager = entityManager;
+        this.eventBus = eventBus;
     }
 
     @EventHandler

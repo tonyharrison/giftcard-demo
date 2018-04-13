@@ -9,6 +9,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.eventhandling.EventBus;
 import org.axonframework.queryhandling.QueryGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +55,12 @@ public class GiftcardUI extends UI {
         });
     }
 
+    @Override
+    public void close() {
+        cardSummaryDataProvider.shutDown();
+        super.close();
+    }
+
     private Panel issuePanel() {
         TextField id = new TextField("Card id");
         TextField amount = new TextField("Amount");
@@ -61,8 +68,7 @@ public class GiftcardUI extends UI {
 
         submit.addClickListener(evt -> {
             commandGateway.sendAndWait(new IssueCmd(id.getValue(), Integer.parseInt(amount.getValue())));
-            Notification.show("Success", Notification.Type.HUMANIZED_MESSAGE)
-                    .addCloseListener(e -> cardSummaryDataProvider.refreshAll());
+            Notification.show("Success", Notification.Type.HUMANIZED_MESSAGE);
         });
 
         FormLayout form = new FormLayout();
@@ -81,8 +87,7 @@ public class GiftcardUI extends UI {
 
         submit.addClickListener(evt -> {
             commandGateway.sendAndWait(new RedeemCmd(id.getValue(), Integer.parseInt(amount.getValue())));
-            Notification.show("Success", Notification.Type.HUMANIZED_MESSAGE)
-                    .addCloseListener(e -> cardSummaryDataProvider.refreshAll());
+            Notification.show("Success", Notification.Type.HUMANIZED_MESSAGE);
         });
 
         FormLayout form = new FormLayout();
