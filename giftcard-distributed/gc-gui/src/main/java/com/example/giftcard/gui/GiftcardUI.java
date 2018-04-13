@@ -1,8 +1,8 @@
 package com.example.giftcard.gui;
 
-import com.example.giftcard.api.CardSummary;
-import com.example.giftcard.api.IssueCmd;
-import com.example.giftcard.api.RedeemCmd;
+import com.example.giftcard.command.api.IssueCmd;
+import com.example.giftcard.command.api.RedeemCmd;
+import com.example.giftcard.query.api.CardSummary;
 import com.vaadin.annotations.Push;
 import com.vaadin.server.DefaultErrorHandler;
 import com.vaadin.server.VaadinRequest;
@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
-import java.util.UUID;
 
 @SpringUI
 @Push
@@ -36,7 +35,7 @@ public class GiftcardUI extends UI {
     protected void init(VaadinRequest vaadinRequest) {
         HorizontalLayout commandBar = new HorizontalLayout();
         commandBar.setSizeFull();
-        commandBar.addComponents(issuePanel(), bulkIssuePanel(), redeemPanel());
+        commandBar.addComponents(issuePanel(), redeemPanel());
 
         VerticalLayout layout = new VerticalLayout();
         layout.addComponents(commandBar, summaryGrid());
@@ -71,39 +70,6 @@ public class GiftcardUI extends UI {
         form.setMargin(true);
 
         Panel panel = new Panel("Issue single card");
-        panel.setContent(form);
-        return panel;
-    }
-
-    private Panel bulkIssuePanel() {
-        TextField number = new TextField("Number");
-        TextField amount = new TextField("Amount");
-        Button submit = new Button("Submit");
-        Panel panel = new Panel("Bulk issue cards");
-
-        submit.addClickListener(evt -> {
-            submit.setEnabled(false);
-            new BulkIssuer(commandGateway, Integer.parseInt(number.getValue()), Integer.parseInt(amount.getValue()),
-                bulkIssuer -> {
-                    access(() -> {
-                        if(bulkIssuer.getRemaining().get() == 0) {
-                            submit.setEnabled(true);
-                            panel.setCaption("Bulk issue cards");
-                            Notification.show("Bulk issue card completed", Notification.Type.HUMANIZED_MESSAGE)
-                                    .addCloseListener(e -> cardSummaryDataProvider.refreshAll());
-                        } else {
-                            panel.setCaption(String.format("Progress: %d suc, %d fail, %d rem", bulkIssuer.getSuccess().get(),
-                                    bulkIssuer.getError().get(), bulkIssuer.getRemaining().get()));
-                            cardSummaryDataProvider.refreshAll();
-                        }
-                    });
-                });
-        });
-
-        FormLayout form = new FormLayout();
-        form.addComponents(number, amount, submit);
-        form.setMargin(true);
-
         panel.setContent(form);
         return panel;
     }

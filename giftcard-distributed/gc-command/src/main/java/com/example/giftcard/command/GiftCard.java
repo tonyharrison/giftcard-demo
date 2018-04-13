@@ -1,9 +1,9 @@
 package com.example.giftcard.command;
 
-import com.example.giftcard.api.IssueCmd;
-import com.example.giftcard.api.IssuedEvt;
-import com.example.giftcard.api.RedeemCmd;
-import com.example.giftcard.api.RedeemedEvt;
+import com.example.giftcard.command.api.IssueCmd;
+import com.example.giftcard.command.api.IssuedEvt;
+import com.example.giftcard.command.api.RedeemCmd;
+import com.example.giftcard.command.api.RedeemedEvt;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.commandhandling.model.AggregateIdentifier;
 import org.axonframework.eventsourcing.EventSourcingHandler;

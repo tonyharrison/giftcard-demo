@@ -1,6 +1,8 @@
 package com.example.giftcard.query;
 
-import com.example.giftcard.api.*;
+import com.example.giftcard.command.api.IssuedEvt;
+import com.example.giftcard.command.api.RedeemedEvt;
+import com.example.giftcard.query.api.*;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.Timestamp;
 import org.axonframework.queryhandling.QueryHandler;
@@ -12,6 +14,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.lang.invoke.MethodHandles;
 import java.time.Instant;
+import java.util.Collection;
 
 @Component
 public class CardSummaryProjection {
@@ -38,24 +41,23 @@ public class CardSummaryProjection {
     }
 
     @QueryHandler
-    public FindCardSummariesResponse handle(FindCardSummariesQuery query) {
+    public Collection<CardSummary> handle(FindCardSummariesQuery query) {
         log.debug("handling {}", query);
         Query jpaQuery = entityManager.createQuery("SELECT c FROM CardSummary c ORDER BY c.id",
                 CardSummary.class);
         jpaQuery.setFirstResult(query.getOffset());
         jpaQuery.setMaxResults(query.getLimit());
-        FindCardSummariesResponse response = new FindCardSummariesResponse(jpaQuery.getResultList());
+        Collection<CardSummary> response = jpaQuery.getResultList();
         log.debug("returning {}", response);
         return response;
     }
 
     @QueryHandler
-    public CountCardSummariesResponse handle(CountCardSummariesQuery query) {
+    public Integer handle(CountCardSummariesQuery query) {
         log.debug("handling {}", query);
         Query jpaQuery = entityManager.createQuery("SELECT COUNT(c) FROM CardSummary c",
                 Long.class);
-        CountCardSummariesResponse response = new CountCardSummariesResponse(
-                ((Long)jpaQuery.getSingleResult()).intValue());
+        Integer response = ((Long)jpaQuery.getSingleResult()).intValue();
         log.debug("returning {}", response);
         return response;
     }

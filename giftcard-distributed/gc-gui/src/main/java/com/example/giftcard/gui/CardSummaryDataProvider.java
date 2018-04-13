@@ -1,12 +1,15 @@
 package com.example.giftcard.gui;
 
-import com.example.giftcard.api.*;
+import com.example.giftcard.query.api.*;
 import com.vaadin.data.provider.CallbackDataProvider;
 import org.axonframework.queryhandling.QueryGateway;
+import org.axonframework.queryhandling.responsetypes.ResponseTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collection;
+import java.util.List;
 
 public class CardSummaryDataProvider extends CallbackDataProvider<CardSummary, Void> {
 
@@ -16,15 +19,13 @@ public class CardSummaryDataProvider extends CallbackDataProvider<CardSummary, V
         super(
                 q -> {
                     FindCardSummariesQuery query = new FindCardSummariesQuery(q.getOffset(), q.getLimit());
-                    FindCardSummariesResponse response = queryGateway.send(
-                            query, FindCardSummariesResponse.class).join();
-                    return response.getData().stream();
+                    Collection<CardSummary> response = queryGateway.query(
+                            query, ResponseTypes.multipleInstancesOf(CardSummary.class)).join();
+                    return response.stream();
                 },
                 q -> {
-                    CountCardSummariesQuery query = new CountCardSummariesQuery();
-                    CountCardSummariesResponse response = queryGateway.send(
-                            query, CountCardSummariesResponse.class).join();
-                    return response.getCount();
+                    return queryGateway.query(new CountCardSummariesQuery(),
+                            ResponseTypes.instanceOf(Integer.class)).join();
                 }
         );
     }

@@ -1,4 +1,4 @@
-package com.example.giftcard.api
+package com.example.giftcard.command.api
 
 import org.axonframework.commandhandling.TargetAggregateIdentifier
 
