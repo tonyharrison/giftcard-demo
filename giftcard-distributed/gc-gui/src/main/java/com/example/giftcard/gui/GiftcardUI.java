@@ -9,7 +9,6 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.axonframework.commandhandling.gateway.CommandGateway;
-import org.axonframework.eventhandling.EventBus;
 import org.axonframework.queryhandling.QueryGateway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,7 @@ public class GiftcardUI extends UI {
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Throwable cause = event.getThrowable();
-                log.error("an error occured", cause);
+                log.error("an error occurred", cause);
                 while(cause.getCause() != null) cause = cause.getCause();
                 Notification.show("Error", cause.getMessage(), Notification.Type.ERROR_MESSAGE);
             }

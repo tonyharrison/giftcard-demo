@@ -1,8 +1,10 @@
 package com.example.giftcard.query;
 
+import com.example.giftcard.query.api.CardSummary;
+import com.example.giftcard.query.api.CountCardSummariesQuery;
+import com.example.giftcard.query.api.FindCardSummariesQuery;
 import com.example.giftcard.command.api.IssuedEvt;
 import com.example.giftcard.command.api.RedeemedEvt;
-import com.example.giftcard.query.api.*;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.Timestamp;

@@ -4,7 +4,7 @@
                  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
                  version="1.0">
     <package>com.example.giftcard.api</package>
-    <entity class="com.example.giftcard.query.api.CardSummary" name="CardSummary">
+    <entity class="api.CardSummary" name="CardSummary">
         <attributes>
             <id name="id"/>
             <basic name="initialValue"/>

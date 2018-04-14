@@ -21,7 +21,7 @@
         <!-- Our api classes -->
 		<dependency>
 			<groupId>com.example</groupId>
-			<artifactId>gc-command-api</artifactId>
+			<artifactId>gc-language</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

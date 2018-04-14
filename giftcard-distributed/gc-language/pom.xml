@@ -4,12 +4,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>gc-command-api</artifactId>
+	<artifactId>gc-language</artifactId>
 	<version>2.0</version>
 	<packaging>jar</packaging>
 
-	<name>gc-command-api</name>
-	<description>API of gc-command</description>
+	<name>gc-language</name>
+	<description>Definition of commands, events and queries</description>
 
     <parent>
         <groupId>com.example</groupId>
