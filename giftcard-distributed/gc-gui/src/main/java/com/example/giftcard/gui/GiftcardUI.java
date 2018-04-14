@@ -1,5 +1,7 @@
 package com.example.giftcard.gui;
 
+import com.example.giftcard.batch.api.BatchSummary;
+import com.example.giftcard.batch.api.StartBatchCmd;
 import com.example.giftcard.command.api.IssueCmd;
 import com.example.giftcard.command.api.RedeemCmd;
 import com.example.giftcard.query.api.CardSummary;
@@ -14,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
+import java.util.UUID;
 
 @SpringUI
 @Push
@@ -25,6 +28,7 @@ public class GiftcardUI extends UI {
     private final QueryGateway queryGateway;
 
     private CardSummaryDataProvider cardSummaryDataProvider;
+    private BatchSummaryDataProvider batchSummaryDataProvider;
 
     public GiftcardUI(CommandGateway commandGateway, QueryGateway queryGateway) {
         this.commandGateway = commandGateway;
@@ -57,7 +61,7 @@ public class GiftcardUI extends UI {
         commandBar.addComponents(issuePanel(), redeemPanel());
 
         VerticalLayout layout = new VerticalLayout();
-        layout.addComponents(commandBar, summaryGrid());
+        layout.addComponents(commandBar, cardSummaryGrid());
         layout.setHeight(95, Unit.PERCENTAGE);
         layout.setCaption("Cards");
 
@@ -67,10 +71,10 @@ public class GiftcardUI extends UI {
     private VerticalLayout batchTab() {
         HorizontalLayout commandBar = new HorizontalLayout();
         commandBar.setSizeFull();
-        commandBar.addComponents(issuePanel());
+        commandBar.addComponents(batchPanel());
 
         VerticalLayout layout = new VerticalLayout();
-        layout.addComponents(commandBar);
+        layout.addComponents(commandBar, batchSummaryGrid());
         layout.setHeight(95, Unit.PERCENTAGE);
         layout.setCaption("Batch");
 
@@ -80,6 +84,7 @@ public class GiftcardUI extends UI {
     @Override
     public void close() {
         cardSummaryDataProvider.shutDown();
+        batchSummaryDataProvider.shutDown();
         super.close();
     }
 
@@ -121,7 +126,25 @@ public class GiftcardUI extends UI {
         return panel;
     }
 
-    private Grid summaryGrid() {
+    private Panel batchPanel() {
+        TextField number = new TextField("Number");
+        Button submit = new Button("Submit");
+
+        submit.addClickListener(evt -> {
+            commandGateway.sendAndWait(new StartBatchCmd(UUID.randomUUID(), Integer.parseInt(number.getValue())));
+            Notification.show("Batch Started", Notification.Type.HUMANIZED_MESSAGE);
+        });
+
+        FormLayout form = new FormLayout();
+        form.addComponents(number, submit);
+        form.setMargin(true);
+
+        Panel panel = new Panel("Issue batch");
+        panel.setContent(form);
+        return panel;
+    }
+
+    private Grid cardSummaryGrid() {
         cardSummaryDataProvider = new CardSummaryDataProvider(queryGateway);
         Grid<CardSummary> grid = new Grid<>();
         grid.addColumn(CardSummary::getId).setCaption("Card ID");
@@ -133,4 +156,15 @@ public class GiftcardUI extends UI {
         return grid;
     }
 
+    private Grid batchSummaryGrid() {
+        batchSummaryDataProvider = new BatchSummaryDataProvider(queryGateway);
+        Grid<BatchSummary> grid = new Grid<>();
+        grid.addColumn(BatchSummary::getId).setCaption("Batch ID");
+        grid.addColumn(BatchSummary::getNRequested).setCaption("#requested");
+        grid.addColumn(BatchSummary::getNSucceeded).setCaption("#succeeded");
+        grid.addColumn(BatchSummary::getNFailed).setCaption("#failed");
+        grid.setSizeFull();
+        grid.setDataProvider(batchSummaryDataProvider);
+        return grid;
+    }
 }
