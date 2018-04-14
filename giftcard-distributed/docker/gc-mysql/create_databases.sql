@@ -1,0 +1,2 @@
+CREATE DATABASE gc_query;
+CREATE DATABASE gc_batch;

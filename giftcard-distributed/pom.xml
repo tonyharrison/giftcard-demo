@@ -34,6 +34,7 @@
 		<module>gc-command</module>
 		<module>gc-query</module>
 		<module>gc-gui</module>
+		<module>gc-batch</module>
 	</modules>
 
 </project>
