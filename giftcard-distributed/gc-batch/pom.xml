@@ -32,6 +32,12 @@
 			<version>${axon.version}</version>
 		</dependency>
 
+		<!-- Vanilla Spring Boot - we don't need JPA or Web stuff -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+		</dependency>
+		
 		<!-- AxonHub client -->
 		<dependency>
 			<groupId>io.axoniq</groupId>
