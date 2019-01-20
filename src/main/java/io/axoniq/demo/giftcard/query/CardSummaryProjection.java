@@ -1,16 +1,20 @@
 package io.axoniq.demo.giftcard.query;
 
+
 import io.axoniq.demo.giftcard.api.*;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
+
 import java.time.Instant;
 import java.util.List;
 
@@ -20,7 +24,10 @@ import java.util.List;
 @Profile("query")
 public class CardSummaryProjection {
 
-    private final EntityManager entityManager;
+    @Autowired
+    private final CardSummaryRepository cardSummaryRepository;
+
+
     private final QueryUpdateEmitter queryUpdateEmitter;
 
     @EventHandler
@@ -30,7 +37,8 @@ public class CardSummaryProjection {
          * Update our read model by inserting the new card. This is done so that upcoming regular
          * (non-subscription) queries get correct data.
          */
-        entityManager.persist(new CardSummary(event.getId(), event.getAmount(), event.getAmount()));
+        cardSummaryRepository.save(new CardSummary(event.getId(),event.getAmount(),event.getAmount()));
+
         /*
          * Serve the subscribed queries by emitting an update. This reads as follows:
          * - to all current subscriptions of type CountCardSummariesQuery
@@ -50,8 +58,13 @@ public class CardSummaryProjection {
          * Update our read model by updating the existing card. This is done so that upcoming regular
          * (non-subscription) queries get correct data.
          */
-        CardSummary summary = entityManager.find(CardSummary.class, event.getId());
-        summary.setRemainingValue(summary.getRemainingValue() - event.getAmount());
+         CardSummary summary = cardSummaryRepository.findById(event.getId())
+                .map(cardSummary -> {
+                    cardSummary.setRemainingValue(cardSummary.getRemainingValue() - event.getAmount());
+                    return cardSummaryRepository.save(cardSummary);
+                }).orElse(null);
+
+
         /*
          * Serve the subscribed queries by emitting an update. This reads as follows:
          * - to all current subscriptions of type FetchCardSummariesQuery
@@ -67,19 +80,14 @@ public class CardSummaryProjection {
     @QueryHandler
     public List<CardSummary> handle(FetchCardSummariesQuery query) {
         log.trace("handling {}", query);
-        TypedQuery<CardSummary> jpaQuery = entityManager.createNamedQuery("CardSummary.fetch", CardSummary.class);
-        jpaQuery.setParameter("idStartsWith", query.getFilter().getIdStartsWith());
-        jpaQuery.setFirstResult(query.getOffset());
-        jpaQuery.setMaxResults(query.getLimit());
-        return log.exit(jpaQuery.getResultList());
+        Page<CardSummary> cardSummaries = cardSummaryRepository.findAllByIdStartsWith(query.getFilter().getIdStartsWith(),PageRequest.of(query.getOffset(),query.getLimit()));
+        return log.exit(cardSummaries.getContent());
     }
 
     @QueryHandler
     public CountCardSummariesResponse handle(CountCardSummariesQuery query) {
         log.trace("handling {}", query);
-        TypedQuery<Long> jpaQuery = entityManager.createNamedQuery("CardSummary.count", Long.class);
-        jpaQuery.setParameter("idStartsWith", query.getFilter().getIdStartsWith());
-        return log.exit(new CountCardSummariesResponse(jpaQuery.getSingleResult().intValue(), Instant.now().toEpochMilli()));
+        return log.exit(new CountCardSummariesResponse(cardSummaryRepository.countAllByIdStartingWith(query.getFilter().getIdStartsWith()).intValue(), Instant.now().toEpochMilli()));
     }
 
 }
